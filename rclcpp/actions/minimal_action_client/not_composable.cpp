@@ -27,7 +27,23 @@ int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("minimal_action_client");
-  auto action_client = rclcpp_action::create_client<Fibonacci>(node, "fibonacci");
+
+  auto options = rcl_action_client_get_default_options();
+
+  options.status_topic_qos.depth = 2;
+  options.goal_service_qos.depth = 2;
+  options.result_service_qos.depth = 2;
+  options.cancel_service_qos.depth = 2;
+  options.feedback_topic_qos.depth = 2;
+
+  options.status_topic_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+  options.goal_service_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+  options.result_service_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+  options.cancel_service_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+  options.feedback_topic_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+
+  auto action_client = rclcpp_action::create_client<Fibonacci>(
+      node, "fibonacci", nullptr, options, rclcpp::IntraProcessSetting::Enable);
 
   if (!action_client->wait_for_action_server(std::chrono::seconds(20))) {
     RCLCPP_ERROR(node->get_logger(), "Action server not available after waiting");
@@ -36,7 +52,7 @@ int main(int argc, char ** argv)
 
   // Populate a goal
   auto goal_msg = Fibonacci::Goal();
-  goal_msg.order = 10;
+  goal_msg.order = 4;
 
   RCLCPP_INFO(node->get_logger(), "Sending goal");
   // Ask server to achieve some goal and wait until it's accepted
