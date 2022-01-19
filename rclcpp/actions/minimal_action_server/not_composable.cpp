@@ -91,6 +91,20 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("minimal_action_server");
 
+  auto options = rcl_action_server_get_default_options();
+
+  options.status_topic_qos.depth = 2;
+  options.goal_service_qos.depth = 2;
+  options.result_service_qos.depth = 2;
+  options.cancel_service_qos.depth = 2;
+  options.feedback_topic_qos.depth = 2;
+
+  options.status_topic_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+  options.goal_service_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+  options.result_service_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+  options.cancel_service_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+  options.feedback_topic_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
+
   // Create an action server with three callbacks
   //   'handle_goal' and 'handle_cancel' are called by the Executor (rclcpp::spin)
   //   'execute' is called whenever 'handle_goal' returns by accepting a goal
@@ -100,7 +114,10 @@ int main(int argc, char ** argv)
     "fibonacci",
     handle_goal,
     handle_cancel,
-    handle_accepted);
+    handle_accepted,
+    options,
+    nullptr,
+    rclcpp::IntraProcessSetting::Enable);
 
   rclcpp::spin(node);
 
