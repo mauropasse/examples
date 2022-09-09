@@ -1,1 +1,1 @@
-byte[1] data
+byte[1048576] data
