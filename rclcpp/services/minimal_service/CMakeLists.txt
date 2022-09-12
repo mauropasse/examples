@@ -11,11 +11,12 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(irobot_events_executor REQUIRED)
 find_package(example_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 
 add_executable(service_main main2.cpp)
-ament_target_dependencies(service_main rclcpp example_interfaces)
+ament_target_dependencies(service_main rclcpp irobot_events_executor example_interfaces)
 
 install(TARGETS service_main
   DESTINATION lib/${PROJECT_NAME})
