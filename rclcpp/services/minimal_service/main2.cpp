@@ -23,13 +23,14 @@ using namespace std::chrono_literals;
 
 #include "example_interfaces/srv/add_two_ints.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp/executors/events_executor/events_executor.hpp"
 
 // #include "rclcpp/experimental/buffers/simple_events_queue.hpp"
 // #include "rclcpp/experimental/buffers/lock_free_events_queue.hpp"
 // #include "rclcpp/experimental/buffers/bounded_events_queue.hpp"
 // #include "rclcpp/experimental/buffers/waitset_events_queue.hpp"
-// using Executor = rclcpp::executors::EventsExecutor;
-using Executor = rclcpp::executors::StaticSingleThreadedExecutor;
+using Executor = rclcpp::executors::EventsExecutor;
+// using Executor = rclcpp::executors::StaticSingleThreadedExecutor;
 
 using AddTwoInts = example_interfaces::srv::AddTwoInts;
 rclcpp::Node::SharedPtr service_node = nullptr;
@@ -85,17 +86,21 @@ int main(int argc, char ** argv)
   client_node = rclcpp::Node::make_shared("client", node_options);
 
   // Client/Service options
-  rmw_qos_profile_t qos_profile = rmw_qos_profile_services_default;
-  qos_profile.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
+  rclcpp::QoSInitialization qos_init(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 4);
+
+  rmw_qos_profile_t rmw_qos_profile = rmw_qos_profile_services_default;
+  rmw_qos_profile.history = RMW_QOS_POLICY_HISTORY_KEEP_LAST;
   std::cout << "Setting OoS depth = 4 for client" << std::endl;
-  qos_profile.depth = 4;
+  rmw_qos_profile.depth = 4;
+
+  rclcpp::QoS qos_profile(qos_init, rmw_qos_profile);
 
   // Create client and service with options
   auto client = client_node->create_client<AddTwoInts>("add_two_ints", qos_profile, nullptr, rclcpp::IntraProcessSetting::Enable);
   auto client2 = client_node->create_client<AddTwoInts>("add_two_ints", qos_profile, nullptr, rclcpp::IntraProcessSetting::Disable);
 
   std::cout << "Setting OoS depth = 4 for service" << std::endl;
-  qos_profile.depth = 4;
+  rmw_qos_profile.depth = 4;
   auto server = service_node->create_service<AddTwoInts>("add_two_ints", handle_service, qos_profile, nullptr, rclcpp::IntraProcessSetting::Enable);
   // auto server2 = service_node->create_service<AddTwoInts>("add_two_ints", handle_servicio, qos_profile);
 
