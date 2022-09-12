@@ -77,9 +77,9 @@ int main(int argc, char ** argv)
 
   // Node options
   rclcpp::NodeOptions node_options = rclcpp::NodeOptions();
-  node_options.use_intra_process_comms(true);
-  node_options.start_parameter_services(true);
-  node_options.start_parameter_event_publisher(true);
+  node_options.use_intra_process_comms(false);
+  node_options.start_parameter_services(false);
+  node_options.start_parameter_event_publisher(false);
 
   // Create nodes with node options
   service_node = rclcpp::Node::make_shared("service", node_options);
@@ -97,7 +97,7 @@ int main(int argc, char ** argv)
 
   // Create client and service with options
   auto client = client_node->create_client<AddTwoInts>("add_two_ints", qos_profile, nullptr, rclcpp::IntraProcessSetting::Enable);
-  auto client2 = client_node->create_client<AddTwoInts>("add_two_ints", qos_profile, nullptr, rclcpp::IntraProcessSetting::Disable);
+  // auto client2 = client_node->create_client<AddTwoInts>("add_two_ints", qos_profile, nullptr, rclcpp::IntraProcessSetting::Disable);
 
   std::cout << "Setting OoS depth = 4 for service" << std::endl;
   rmw_qos_profile.depth = 4;
@@ -155,25 +155,24 @@ int main(int argc, char ** argv)
     request->a = i;
     request->b = i;
 
-    AddTwoInts::Request::SharedPtr request2 = std::make_shared<AddTwoInts::Request>();
-    request2->a = i+3;
-    request2->b = i+3;
-
     std::function<void(typename rclcpp::Client<AddTwoInts>::SharedFuture future)> callback_function = std::bind(
         &client_callback,
         request,
         std::placeholders::_1
     );
 
-    std::function<void(typename rclcpp::Client<AddTwoInts>::SharedFuture future)> callback_function2 = std::bind(
-        &client_callback,
-        request2,
-        std::placeholders::_1
-    );
-
-    std::cout << std::endl;
+    std::cout << "send request number: " << i << std::endl;
     client->async_send_request(request, callback_function);
-    client2->async_send_request(request2, callback_function2);
+
+    // AddTwoInts::Request::SharedPtr request2 = std::make_shared<AddTwoInts::Request>();
+    // request2->a = i+3;
+    // request2->b = i+3;
+    // std::function<void(typename rclcpp::Client<AddTwoInts>::SharedFuture future)> callback_function2 = std::bind(
+    //     &client_callback,
+    //     request2,
+    //     std::placeholders::_1
+    // );
+    // client2->async_send_request(request2, callback_function2);
 
     std::this_thread::sleep_for(10ms);
   }
