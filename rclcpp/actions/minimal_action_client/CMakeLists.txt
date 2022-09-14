@@ -14,6 +14,8 @@ find_package(ament_cmake REQUIRED)
 find_package(example_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
+find_package(irobot_events_executor REQUIRED)
+
 
 add_executable(action_client_member_functions member_functions.cpp)
 ament_target_dependencies(action_client_member_functions
@@ -31,7 +33,8 @@ add_executable(client_server client_server.cpp)
 ament_target_dependencies(client_server
   "rclcpp"
   "rclcpp_action"
-  "example_interfaces")
+  "example_interfaces"
+  "irobot_events_executor")
 
 add_executable(action_client_not_composable_with_cancel not_composable_with_cancel.cpp)
 ament_target_dependencies(action_client_not_composable_with_cancel

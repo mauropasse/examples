@@ -16,6 +16,8 @@
 #include <cinttypes>
 #include <memory>
 #include <thread>
+#include "rclcpp/executors/events_executor/events_executor.hpp"
+
 
 #include "example_interfaces/action/fibonacci.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -96,13 +98,19 @@ int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   auto ipc_setting = rclcpp::IntraProcessSetting::Disable;
-  // ipc_setting = rclcpp::IntraProcessSetting::Enable;
+  ipc_setting = rclcpp::IntraProcessSetting::Enable;
 
   if (ipc_setting == rclcpp::IntraProcessSetting::Enable) {
     std::cout << "\n   INTRA-PROCESS ON   \n" << std::endl;
   } else {
     std::cout << "\n   INTRA-PROCESS OFF  \n" << std::endl;
   }
+
+  // Node options
+  rclcpp::NodeOptions node_options = rclcpp::NodeOptions();
+  node_options.use_intra_process_comms(true);
+  node_options.start_parameter_services(false);
+  node_options.start_parameter_event_publisher(false);
 
   ////////////////////////////// SERVER ///////////////////////////////////////
   auto server_options = rcl_action_server_get_default_options();
@@ -120,10 +128,10 @@ int main(int argc, char ** argv)
   server_options.feedback_topic_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
 
   // Goal handles that have results longer than this time are deallocated
-  const std::chrono::milliseconds result_timeout{1000};
+  const std::chrono::milliseconds result_timeout{5000};
   server_options.result_timeout.nanoseconds = RCL_MS_TO_NS(result_timeout.count());
 
-  auto server_node = rclcpp::Node::make_shared("minimal_action_server");
+  auto server_node = rclcpp::Node::make_shared("minimal_action_server", node_options);
 
   auto action_server = rclcpp_action::create_server<Fibonacci>(
     server_node,
@@ -135,7 +143,8 @@ int main(int argc, char ** argv)
     nullptr,
     ipc_setting);
 
-  auto server_executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+  auto server_executor = std::make_shared<rclcpp::executors::EventsExecutor>();
+  // auto server_executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
   server_executor->add_node(server_node);
 
   std::thread service_spin_thread([=](){
@@ -161,20 +170,25 @@ int main(int argc, char ** argv)
   client_options.cancel_service_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
   client_options.feedback_topic_qos.durability = RMW_QOS_POLICY_DURABILITY_VOLATILE;
 
-  auto client_node = rclcpp::Node::make_shared("client");
+  auto client_node = rclcpp::Node::make_shared("client", node_options);
+
+  auto client_executor = std::make_shared<rclcpp::executors::EventsExecutor>();
+  client_executor->add_node(client_node);
 
   auto action_client = rclcpp_action::create_client<Fibonacci>(
       client_node, "fibonacci", nullptr, client_options, ipc_setting);
 
-  if (!action_client->wait_for_action_server(std::chrono::seconds(20))) {
-    RCLCPP_ERROR(client_node->get_logger(), "Action server not available after waiting");
-    return 1;
-  }
+  // Not supported on Stub DDS !!!
+
+  // if (!action_client->wait_for_action_server(std::chrono::seconds(20))) {
+  //   RCLCPP_ERROR(client_node->get_logger(), "Action server not available after waiting");
+  //   return 1;
+  // }
 
   // Ask server to achieve some goal and wait until it's accepted
   // Populate a goal
   auto goal_msg = Fibonacci::Goal();
-  goal_msg.order = 2;
+  goal_msg.order = 4;
 
   RCLCPP_INFO(client_node->get_logger(), "Sending goal");
 
@@ -182,20 +196,26 @@ int main(int argc, char ** argv)
 
   send_goal_options.result_callback =
     [](const typename ActionGoalHandle::WrappedResult & result)
-    {std::cout << "Calling result_callback" << std::endl; (void)result;};
+    {std::cout << "send_goal_options result_callback" << std::endl; (void)result;};
 
   send_goal_options.goal_response_callback =
     [](typename ActionGoalHandle::SharedPtr goal_handle)
-    {std::cout << "Calling goal_response_callback"<< std::endl;(void)goal_handle;};
+    {std::cout << "send_goal_options goal_response_callback"<< std::endl;(void)goal_handle;};
 
   send_goal_options.feedback_callback =
     [](typename ActionGoalHandle::SharedPtr handle,
       const std::shared_ptr<const Fibonacci::Feedback> feedback)
-    {std::cout << "Calling feedback_callback"<< std::endl;(void)handle;(void)feedback;};
+    {
+      std::cout << "send_goal_options feedback_callback"<< std::endl;(void)handle;
+      auto & sequence = feedback->sequence;
+      for (auto i : sequence) {
+        std::cout << "i: " << i << std::endl;
+      }
+    };
 
   auto goal_handle_future = action_client->async_send_goal(goal_msg, send_goal_options);
 
-  if (rclcpp::spin_until_future_complete(client_node, goal_handle_future) !=
+  if (client_executor->spin_until_future_complete(goal_handle_future) !=
     rclcpp::FutureReturnCode::SUCCESS)
   {
     RCLCPP_ERROR(client_node->get_logger(), "send goal call failed :(");
@@ -216,10 +236,9 @@ int main(int argc, char ** argv)
   RCLCPP_INFO(client_node->get_logger(), "Waiting for result");
 
   // Wait result. To test cancel, set a low timeout (3 sec)
-  auto wait_result = rclcpp::spin_until_future_complete(
-    client_node,
+  auto wait_result = client_executor->spin_until_future_complete(
     result_future,
-    std::chrono::seconds(1));
+    std::chrono::seconds(10));
 
   // Expire goal
   // std::cout << "Expire goal, sleep some time" << std::endl;
@@ -235,7 +254,7 @@ int main(int argc, char ** argv)
     RCLCPP_INFO(client_node->get_logger(), "Canceling goal, taking too long!");
     auto cancel_result_future = action_client->async_cancel_goal(goal_handle);
 
-    auto cancel_result = rclcpp::spin_until_future_complete(client_node, cancel_result_future);
+    auto cancel_result = client_executor->spin_until_future_complete(cancel_result_future);
 
     if (cancel_result != rclcpp::FutureReturnCode::SUCCESS) {
       RCLCPP_ERROR(client_node->get_logger(), "Failed to cancel goal");
@@ -246,7 +265,7 @@ int main(int argc, char ** argv)
     // The cancel request has been accepted!
     // Get the cancel result
     RCLCPP_INFO(client_node->get_logger(), "Goal is being canceled, wait for result.");
-    if (rclcpp::spin_until_future_complete(client_node, result_future) !=
+    if (client_executor->spin_until_future_complete(result_future) !=
       rclcpp::FutureReturnCode::SUCCESS)
     {
       RCLCPP_ERROR(client_node->get_logger(), "Get result call failed :(");
@@ -262,8 +281,8 @@ int main(int argc, char ** argv)
   }
 
   // Expire goal
-  std::cout << "Expire goal, sleep some time" << std::endl;
-  rclcpp::sleep_for(2 * result_timeout);
+  // std::cout << "Expire goal, sleep some time" << std::endl;
+  // rclcpp::sleep_for(2 * result_timeout);
 
   rclcpp_action::ClientGoalHandle<Fibonacci>::WrappedResult wrapped_result = result_future.get();
 
