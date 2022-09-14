@@ -22,7 +22,7 @@ int main(int argc, char * argv[])
   node_options.use_intra_process_comms(true);
   node_options.start_parameter_services(false);
   node_options.start_parameter_event_publisher(false);
-  node_options.start_parameter_event_subscriber(false);
+  // node_options.start_parameter_event_subscriber(false);
 
   // Profile:
   // * Default Nodes - Params ON (default)            default_nodes.cpp
