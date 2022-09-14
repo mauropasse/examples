@@ -21,7 +21,7 @@ int main(int argc, char * argv[])
   node_options.use_intra_process_comms(true);
   node_options.start_parameter_services(true);
   node_options.start_parameter_event_publisher(true);
-  node_options.start_parameter_event_subscriber(true);
+  // node_options.start_parameter_event_subscriber(true);
 
   // Profile:
   // * Default Nodes - Params ON (default)            default_nodes.cpp
