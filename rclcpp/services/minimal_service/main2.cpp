@@ -96,12 +96,12 @@ int main(int argc, char ** argv)
   rclcpp::QoS qos_profile(qos_init, rmw_qos_profile);
 
   // Create client and service with options
-  auto client = client_node->create_client<AddTwoInts>("add_two_ints", qos_profile, nullptr, rclcpp::IntraProcessSetting::Enable);
+  auto client = client_node->create_client<AddTwoInts>("add_two_ints", rmw_qos_profile, nullptr, rclcpp::IntraProcessSetting::Enable);
   // auto client2 = client_node->create_client<AddTwoInts>("add_two_ints", qos_profile, nullptr, rclcpp::IntraProcessSetting::Disable);
 
   std::cout << "Setting OoS depth = 4 for service" << std::endl;
   rmw_qos_profile.depth = 4;
-  auto server = service_node->create_service<AddTwoInts>("add_two_ints", handle_service, qos_profile, nullptr, rclcpp::IntraProcessSetting::Enable);
+  auto server = service_node->create_service<AddTwoInts>("add_two_ints", handle_service, rmw_qos_profile, nullptr, rclcpp::IntraProcessSetting::Enable);
   // auto server2 = service_node->create_service<AddTwoInts>("add_two_ints", handle_servicio, qos_profile);
 
   // auto client_qos = client->get_actual_qos();
