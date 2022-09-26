@@ -48,22 +48,22 @@ add_executable(nodes_params_off_logging_on src/nodes_params_off_logging_on.cpp)
 target_include_directories(nodes_params_off_logging_on PRIVATE include)
 ament_target_dependencies(nodes_params_off_logging_on rclcpp)
 
-add_executable(pub_sub_diff_topic src/pub_sub_diff_topic.cpp)
-target_include_directories(pub_sub_diff_topic PRIVATE include memory_msgs)
-ament_target_dependencies(pub_sub_diff_topic rclcpp memory_msgs)
-
+#add_executable(pub_sub_diff_topic src/pub_sub_diff_topic.cpp)
+#target_include_directories(pub_sub_diff_topic PRIVATE include memory_msgs)
+#ament_target_dependencies(pub_sub_diff_topic rclcpp memory_msgs)
+#
 add_executable(pub_sub_same_topic src/pub_sub_same_topic.cpp)
 target_include_directories(pub_sub_same_topic PRIVATE include memory_msgs)
 ament_target_dependencies(pub_sub_same_topic rclcpp memory_msgs)
 
-add_executable(pub_sub_diff_msg_type src/pub_sub_diff_msg_type.cpp)
-target_include_directories(pub_sub_diff_msg_type PRIVATE include memory_msgs)
-ament_target_dependencies(pub_sub_diff_msg_type rclcpp memory_msgs)
-
-add_executable(cli_serv_diff_topics src/cli_serv_diff_topics.cpp)
-target_include_directories(cli_serv_diff_topics PRIVATE include)
-ament_target_dependencies(cli_serv_diff_topics rclcpp std_srvs)
-
+#add_executable(pub_sub_diff_msg_type src/pub_sub_diff_msg_type.cpp)
+#target_include_directories(pub_sub_diff_msg_type PRIVATE include memory_msgs)
+#ament_target_dependencies(pub_sub_diff_msg_type rclcpp memory_msgs)
+#
+#add_executable(cli_serv_diff_topics src/cli_serv_diff_topics.cpp)
+#target_include_directories(cli_serv_diff_topics PRIVATE include)
+#ament_target_dependencies(cli_serv_diff_topics rclcpp std_srvs)
+#
 add_executable(cli_serv_same_topics src/cli_serv_same_topics.cpp)
 target_include_directories(cli_serv_same_topics PRIVATE include)
 ament_target_dependencies(cli_serv_same_topics rclcpp std_srvs)
@@ -84,10 +84,10 @@ install(TARGETS
   default_clients_params_off
   default_services_params_off
   nodes_params_off_logging_on
-  pub_sub_diff_topic
+  #pub_sub_diff_topic
   pub_sub_same_topic
-  pub_sub_diff_msg_type
-  cli_serv_diff_topics
+  #pub_sub_diff_msg_type
+  #cli_serv_diff_topics
   cli_serv_same_topics
   pub_sub_big_history_size
   pub_sub_big_message_size
