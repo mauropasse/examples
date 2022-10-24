@@ -14,6 +14,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 add_executable(subscriber_lambda lambda.cpp)
 ament_target_dependencies(subscriber_lambda rclcpp std_msgs)
@@ -35,6 +36,9 @@ ament_target_dependencies(subscriber_not_composable rclcpp std_msgs)
 
 add_executable(subscriber_content_filtering content_filtering.cpp)
 ament_target_dependencies(subscriber_content_filtering rclcpp std_msgs)
+
+add_executable(subscriber_sensor_msg subscriber_sensor_msg.cpp)
+ament_target_dependencies(subscriber_sensor_msg rclcpp sensor_msgs)
 
 add_library(wait_set_subscriber_library SHARED
     wait_set_subscriber.cpp
@@ -68,6 +72,7 @@ install(TARGETS
   subscriber_member_function_with_unique_network_flow_endpoints
   subscriber_not_composable
   subscriber_content_filtering
+  subscriber_sensor_msg
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
