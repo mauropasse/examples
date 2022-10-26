@@ -18,6 +18,7 @@
 #include "rclcpp/executors.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
+#include "rclcpp/executors/events_executor/events_executor.hpp"
 
 using namespace std::chrono_literals;
 
@@ -32,7 +33,7 @@ int main(int argc, char * argv[])
   {
     auto n1 = std::make_shared<rclcpp_lifecycle::LifecycleNode>("node_1", rclcpp::NodeOptions());
     ex->add_node(n1->get_node_base_interface());
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::this_thread::sleep_for(100ms);
   }
 
   rclcpp::shutdown();

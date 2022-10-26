@@ -15,10 +15,11 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(rcl_lifecycle REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(irobot_events_executor REQUIRED)
 
 
 add_executable(lifecycle_nodes_test lifecycle_nodes_test.cpp)
-ament_target_dependencies(lifecycle_nodes_test rclcpp std_msgs rcl_lifecycle rclcpp_lifecycle)
+ament_target_dependencies(lifecycle_nodes_test rclcpp irobot_events_executor std_msgs rcl_lifecycle rclcpp_lifecycle)
 
 install(TARGETS
   lifecycle_nodes_test
