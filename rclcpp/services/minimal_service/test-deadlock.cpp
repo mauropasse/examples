@@ -18,6 +18,8 @@
 #include "rclcpp/rclcpp.hpp"
 
 #include <std_srvs/srv/set_bool.hpp>
+#include "rclcpp/executors/events_executor/events_executor.hpp"
+
 
 #include <string>
 
@@ -27,13 +29,14 @@ int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
 
-  auto m_node_executor = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
-  auto m_node_executor2 = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+  auto service_executor = std::make_shared<rclcpp::executors::EventsExecutor>(); //EventsExecutor
+
+  auto client_executor = std::make_shared<rclcpp::executors::EventsExecutor>();
 
   // Create a node
   auto opt = rclcpp::NodeOptions();
   auto server_node = rclcpp::Node::make_shared("server_node", opt);
-  m_node_executor->add_node(server_node->get_node_base_interface());
+  service_executor->add_node(server_node->get_node_base_interface());
   auto m_service = rclcpp::create_service<std_srvs::srv::SetBool>(
       server_node->get_node_base_interface(),
       server_node->get_node_services_interface(),
@@ -50,17 +53,17 @@ int main(int argc, char ** argv)
       nullptr);
 
   auto client_node = rclcpp::Node::make_shared("client_node", opt);
-  m_node_executor2->add_node(client_node);
+  client_executor->add_node(client_node);
   auto m_client = client_node->create_client<std_srvs::srv::SetBool>("example_service");
 
-  auto m_node_thread = std::thread(std::bind([&]()
+  auto service_spin_thread = std::thread(std::bind([&]()
   {
-      m_node_executor->spin();
+      service_executor->spin();
   }));
 
-  auto m_node_thread2 = std::thread(std::bind([&]()
+  auto client_spin_thread = std::thread(std::bind([&]()
   {
-      m_node_executor2->spin();
+      client_executor->spin();
   }));
 
 
@@ -78,15 +81,26 @@ int main(int argc, char ** argv)
   uint counter = 1;
   do {
       RCLCPP_INFO(client_node->get_logger(), "Sending request: %d" , counter);
-      auto result = m_client->async_send_request(request);
+      auto result_future = m_client->async_send_request(request);
       RCLCPP_INFO(client_node->get_logger(), "Waiting for response: %d" , counter);
-      auto answer = result.get();
+
+      // if (client_executor->spin_until_future_complete(result_future, std::chrono::milliseconds(10)) !=
+      //   rclcpp::FutureReturnCode::SUCCESS)
+      // {
+      //   std::this_thread::sleep_for(std::chrono::seconds(2));
+      //   RCLCPP_ERROR(client_node->get_logger(), "service call failed :(");
+      //   m_client->remove_pending_request(result_future);
+      // }
+
+      auto answer = result_future.get();
+
       assert(answer->success);
       RCLCPP_INFO(client_node->get_logger(), "Got response: %s", answer->message.c_str());
   }while(++counter<1000000);
 
 
   rclcpp::shutdown();
-  m_node_thread.join();
+  service_spin_thread.join();
+  client_spin_thread.join();
   return 0;
 }
