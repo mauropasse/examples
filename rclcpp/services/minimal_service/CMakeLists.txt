@@ -14,11 +14,19 @@ find_package(ament_cmake REQUIRED)
 find_package(irobot_events_executor REQUIRED)
 find_package(example_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_srvs REQUIRED)
 
 add_executable(service_main main2.cpp)
 ament_target_dependencies(service_main rclcpp irobot_events_executor example_interfaces)
 
 install(TARGETS service_main
+  DESTINATION lib/${PROJECT_NAME})
+
+add_executable(test-deadlock test-deadlock.cpp)
+
+ament_target_dependencies(test-deadlock rclcpp example_interfaces std_srvs)
+
+install(TARGETS test-deadlock
   DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)

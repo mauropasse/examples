@@ -30,8 +30,14 @@ int main(int argc, char * argv[])
 
   std::thread my_thread([&](){ ex->spin(); });
 
+  rclcpp::NodeOptions node_options = rclcpp::NodeOptions();
+  node_options.enable_rosout(false);
+  node_options.use_intra_process_comms(true);
+  node_options.start_parameter_services(true);
+  node_options.start_parameter_event_publisher(true);
+
   {
-    auto n1 = std::make_shared<rclcpp_lifecycle::LifecycleNode>("node_1", rclcpp::NodeOptions());
+    auto n1 = std::make_shared<rclcpp_lifecycle::LifecycleNode>("node_1", node_options);
     ex->add_node(n1->get_node_base_interface());
     std::this_thread::sleep_for(100ms);
   }
