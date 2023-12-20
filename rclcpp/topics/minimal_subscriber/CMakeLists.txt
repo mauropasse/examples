@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(examples_rclcpp_minimal_subscriber)
+include(${PROJECT_SOURCE_DIR}/cmake/build_types.cmake)
 
 # Default to C++14
 set(CMAKE_CXX_STANDARD 17)
@@ -7,7 +8,6 @@ set(CMAKE_CXX_STANDARD 17)
 #///////////////////////////////////
 
 # Include build types file
-include(${PROJECT_SOURCE_DIR}/cmake/build_types.cmake)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
@@ -25,6 +25,9 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(RapidJSON REQUIRED)
+
+ament_export_include_directories(include)
+ament_export_dependencies(rclcpp)
 
 add_executable(subscriber_lambda lambda.cpp)
 ament_target_dependencies(subscriber_lambda rclcpp std_msgs)
