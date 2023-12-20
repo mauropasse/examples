@@ -1,28 +1,36 @@
 <?xml version="1.0"?>
-<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
-<package format="2">
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
   <name>examples_rclcpp_minimal_subscriber</name>
-  <version>0.11.2</version>
-  <description>Examples of minimal subscribers</description>
-  <maintainer email="mabel@openrobotics.org">Mabel Zhang</maintainer>
-  <maintainer email="sloretz@openrobotics.org">Shane Loretz</maintainer>
-  <license>Apache License 2.0</license>
-  <author>Mikael Arguedas</author>
-  <author>Morgan Quigley</author>
-  <author email="jacob@openrobotics.org">Jacob Perron</author>
+  <version>2.0.0</version>
+  <description>The examples_rclcpp_minimal_subscriber package</description>
+  <maintainer email="dl-sim-ekumen@irobot.com">Ekumen</maintainer>
+  <license>Copyright iRobot</license>
+
+  <depend>geometry_msgs</depend>
+  <depend>irobot2_gazebo_msgs</depend>
+  <depend>rosgraph_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>Boost</depend>
+  <depend>openssl</depend>
+  <depend>RapidJSON</depend>
+
+  <build_depend>rclcpp</build_depend>
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>rosapi</exec_depend>
+  <exec_depend>rosbridge_server</exec_depend>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <build_depend>rclcpp</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>rapidjson</build_depend>
-  <depend>irobot2_gazebo_msgs</depend>
-
-  <exec_depend>rclcpp</exec_depend>
-  <exec_depend>std_msgs</exec_depend>
-
+  <test_depend>ament_cmake_gtest</test_depend>
+  <test_depend>ament_index_cpp</test_depend>
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
+  <test_depend>ament_cmake_xmllint</test_depend>
+  <test_depend>ament_cppcheck</test_depend>
+  <test_depend>ament_cmake_flake8</test_depend>
+  <test_depend>ament_cmake_pep257</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
