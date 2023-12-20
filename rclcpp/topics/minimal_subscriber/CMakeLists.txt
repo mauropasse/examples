@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 #///////////////////////////////////
 
 # Include build types file
-# include(${PROJECT_SOURCE_DIR}/cmake/build_types.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/build_types.cmake)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
