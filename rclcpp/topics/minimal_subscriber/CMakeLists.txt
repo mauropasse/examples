@@ -29,7 +29,11 @@ find_package(RapidJSON REQUIRED)
 add_executable(subscriber_lambda lambda.cpp)
 ament_target_dependencies(subscriber_lambda rclcpp std_msgs)
 
-
+if(TARGET rapidjson::rapidjson)
+  target_link_libraries(subscriber_lambda rapidjson::rapidjson)
+else()
+  target_include_directories(subscriber_lambda PUBLIC ${RAPIDJSON_INCLUDE_DIRS})
+endif()
 
 install(TARGETS
   subscriber_lambda
