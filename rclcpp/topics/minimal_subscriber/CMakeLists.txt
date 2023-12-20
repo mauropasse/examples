@@ -24,7 +24,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-# find_package(RapidJSON REQUIRED)
+find_package(RapidJSON REQUIRED)
 
 add_executable(subscriber_lambda lambda.cpp)
 ament_target_dependencies(subscriber_lambda rclcpp std_msgs)
