@@ -25,6 +25,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(RapidJSON REQUIRED)
+find_package(irobot2_gazebo_msgs REQUIRED)
 
 ament_export_include_directories(include)
 ament_export_dependencies(rclcpp)
@@ -37,6 +38,7 @@ if(TARGET rapidjson::rapidjson)
 else()
   target_include_directories(subscriber_lambda PUBLIC ${RAPIDJSON_INCLUDE_DIRS})
 endif()
+  target_include_directories(subscriber_lambda PUBLIC ${irobot2_gazebo_msgs_INCLUDES_RELEASE})
 
 install(TARGETS
   subscriber_lambda
