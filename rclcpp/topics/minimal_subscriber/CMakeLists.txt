@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(examples_rclcpp_minimal_subscriber)
-include(${PROJECT_SOURCE_DIR}/cmake/build_types.cmake)
+# include(${PROJECT_SOURCE_DIR}/cmake/build_types.cmake)
 
 # Default to C++14
 set(CMAKE_CXX_STANDARD 17)
