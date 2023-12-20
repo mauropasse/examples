@@ -21,33 +21,33 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(RapidJSON CONFIG REQUIRED)
-find_package(irobot2_gazebo_msgs REQUIRED)
-# find_package(OpenSSL REQUIRED)
+find_package(OpenSSL REQUIRED)
+# find_package(ament_cmake REQUIRED)
+# find_package(rclcpp REQUIRED)
+# find_package(std_msgs REQUIRED)
+# find_package(RapidJSON CONFIG REQUIRED)
+# find_package(irobot2_gazebo_msgs REQUIRED)
 
-ament_export_include_directories(include)
-ament_export_dependencies(rclcpp)
+# ament_export_include_directories(include)
+# ament_export_dependencies(rclcpp)
 
-add_executable(subscriber_lambda lambda.cpp)
-ament_target_dependencies(subscriber_lambda rclcpp std_msgs)
+# add_executable(subscriber_lambda lambda.cpp)
+# ament_target_dependencies(subscriber_lambda rclcpp std_msgs)
 
-if(TARGET rapidjson::rapidjson)
-  target_link_libraries(subscriber_lambda rapidjson::rapidjson)
-else()
-  target_include_directories(subscriber_lambda PUBLIC ${RAPIDJSON_INCLUDE_DIRS})
-endif()
-  target_include_directories(subscriber_lambda PUBLIC ${irobot2_gazebo_msgs_INCLUDES_RELEASE})
+# if(TARGET rapidjson::rapidjson)
+#   target_link_libraries(subscriber_lambda rapidjson::rapidjson)
+# else()
+#   target_include_directories(subscriber_lambda PUBLIC ${RAPIDJSON_INCLUDE_DIRS})
+# endif()
+#   target_include_directories(subscriber_lambda PUBLIC ${irobot2_gazebo_msgs_INCLUDES_RELEASE})
 
-install(TARGETS
-  subscriber_lambda
-  DESTINATION lib/${PROJECT_NAME})
+# install(TARGETS
+#   subscriber_lambda
+#   DESTINATION lib/${PROJECT_NAME})
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
-endif()
+# if(BUILD_TESTING)
+#   find_package(ament_lint_auto REQUIRED)
+#   ament_lint_auto_find_test_dependencies()
+# endif()
 
-ament_package()
+# ament_package()
