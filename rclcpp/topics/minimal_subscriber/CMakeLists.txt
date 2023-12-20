@@ -3,13 +3,11 @@ project(examples_rclcpp_minimal_subscriber)
 
 # Default to C++14
 set(CMAKE_CXX_STANDARD 17)
-include(${PROJECT_SOURCE_DIR}/cmake/build_types.cmake)
-
 
 #///////////////////////////////////
 
 # Include build types file
-include(${PROJECT_SOURCE_DIR}/cmake/build_types.cmake)
+# include(${PROJECT_SOURCE_DIR}/cmake/build_types.cmake)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
