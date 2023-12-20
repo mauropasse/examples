@@ -26,7 +26,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
 find_package(irobot2_gazebo_msgs REQUIRED)
-find_package(OpenSSL REQUIRED)
+# find_package(OpenSSL REQUIRED)
 
 ament_export_include_directories(include)
 ament_export_dependencies(rclcpp)
