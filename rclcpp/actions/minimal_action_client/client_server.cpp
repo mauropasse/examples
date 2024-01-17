@@ -81,7 +81,7 @@ void execute(
   // Check if goal is done
   if (rclcpp::ok()) {
     result->sequence = sequence;
-    std::cout << "Application call: goal_handle->succeed(result);" << std::endl;
+    std::cout << "[MAUROS2] - Application call: goal_handle->succeed(result);" << std::endl;
     goal_handle->succeed(result);
     RCLCPP_INFO(rclcpp::get_logger("server"), "Goal Succeeded");
   }
@@ -90,7 +90,7 @@ void execute(
 void handle_accepted(const std::shared_ptr<GoalHandleFibonacci> goal_handle)
 {
   // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-  std::cout << "handle_accepted, spawn thread to: execute()" << std::endl;
+  std::cout << "[MAUROS2] - handle_accepted, spawn thread to: execute()" << std::endl;
   std::thread{execute, goal_handle}.detach();
 }
 
@@ -101,9 +101,9 @@ int main(int argc, char ** argv)
   ipc_setting = rclcpp::IntraProcessSetting::Enable;
 
   if (ipc_setting == rclcpp::IntraProcessSetting::Enable) {
-    std::cout << "\n   INTRA-PROCESS ON   \n" << std::endl;
+    std::cout << "[MAUROS2] - \n   INTRA-PROCESS ON   \n" << std::endl;
   } else {
-    std::cout << "\n   INTRA-PROCESS OFF  \n" << std::endl;
+    std::cout << "[MAUROS2] - \n   INTRA-PROCESS OFF  \n" << std::endl;
   }
 
   // Node options
@@ -148,7 +148,7 @@ int main(int argc, char ** argv)
   server_executor->add_node(server_node);
 
   std::thread service_spin_thread([=](){
-      std::cout << "server_executor->spin()" << std::endl;
+      std::cout << "[MAUROS2] - server_executor->spin()" << std::endl;
       server_executor->spin();
   });
   service_spin_thread.detach();
@@ -196,20 +196,20 @@ int main(int argc, char ** argv)
 
   send_goal_options.result_callback =
     [](const typename ActionGoalHandle::WrappedResult & result)
-    {std::cout << "send_goal_options result_callback" << std::endl; (void)result;};
+    {std::cout << "[MAUROS2] - Client, call result_callback" << std::endl; (void)result;};
 
   send_goal_options.goal_response_callback =
     [](typename ActionGoalHandle::SharedPtr goal_handle)
-    {std::cout << "send_goal_options goal_response_callback"<< std::endl;(void)goal_handle;};
+    {std::cout << "[MAUROS2] - Client, call goal_response_callback"<< std::endl;(void)goal_handle;};
 
   send_goal_options.feedback_callback =
     [](typename ActionGoalHandle::SharedPtr handle,
       const std::shared_ptr<const Fibonacci::Feedback> feedback)
     {
-      std::cout << "send_goal_options feedback_callback"<< std::endl;(void)handle;
+      std::cout << "[MAUROS2] - Client, call feedback_callback"<< std::endl;(void)handle;
       auto & sequence = feedback->sequence;
       for (auto i : sequence) {
-        std::cout << "i: " << i << std::endl;
+        std::cout << "[MAUROS2] - i: " << i << std::endl;
       }
     };
 
@@ -241,7 +241,7 @@ int main(int argc, char ** argv)
     std::chrono::seconds(10));
 
   // Expire goal
-  // std::cout << "Expire goal, sleep some time" << std::endl;
+  // std::cout << "[MAUROS2] - Expire goal, sleep some time" << std::endl;
   // rclcpp::sleep_for(2 * result_timeout);
 
   // Test:
@@ -281,7 +281,7 @@ int main(int argc, char ** argv)
   }
 
   // Expire goal
-  // std::cout << "Expire goal, sleep some time" << std::endl;
+  // std::cout << "[MAUROS2] - Expire goal, sleep some time" << std::endl;
   // rclcpp::sleep_for(2 * result_timeout);
 
   rclcpp_action::ClientGoalHandle<Fibonacci>::WrappedResult wrapped_result = result_future.get();

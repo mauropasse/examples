@@ -24,7 +24,7 @@ install(TARGETS service_main
 
 add_executable(test-deadlock test-deadlock.cpp)
 
-ament_target_dependencies(test-deadlock rclcpp example_interfaces std_srvs)
+ament_target_dependencies(test-deadlock rclcpp irobot_events_executor example_interfaces std_srvs)
 
 install(TARGETS test-deadlock
   DESTINATION lib/${PROJECT_NAME})
